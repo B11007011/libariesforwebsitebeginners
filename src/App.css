@@ -1,0 +1,229 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #8AB77A;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.signup-form {
+  background: white;
+  width: 100%;
+  min-height: 100%;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.signup-form h2 {
+  color: #4A6741;
+  font-size: 2rem;
+  text-align: center;
+  margin: 1rem 0 2rem 0;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 480px) {
+  .signup-container {
+    padding: 0;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .signup-form {
+    padding: 1.5rem 1rem 6rem 1rem;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .signup-button {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 0;
+    padding: 1.25rem;
+    z-index: 100;
+  }
+  
+  .form-group:last-of-type {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Desktop styles */
+@media screen and (min-width: 481px) {
+  .signup-form {
+    min-height: auto;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+  
+  .signup-container {
+    align-items: center;
+  }
+}
+
+.signup-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #4A6741;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.signup-button:hover {
+  background-color: #3d5635;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.signup-subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4A6741;
+  font-weight: 500;
+}
+
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.signup-button.loading {
+  background-color: #7da271;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.login-link a {
+  color: #4A6741;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Password strength indicator */
+.password-strength {
+  height: 4px;
+  background: #ddd;
+  margin-top: 0.5rem;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.strength-weak { width: 33%; background-color: #dc3545; }
+.strength-medium { width: 66%; background-color: #ffc107; }
+.strength-strong { width: 100%; background-color: #28a745; }
+

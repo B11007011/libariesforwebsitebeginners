@@ -1,0 +1,40 @@
+{
+  "name": "Mindful Moments - Track Your Sleep and Mood",
+  "short_name": "Mindful Moments",
+  "description": "Track your sleep schedule and daily mood with Mindful Moments",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4A6741",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Track Sleep",
+      "short_name": "Sleep",
+      "description": "Record your sleep schedule",
+      "url": "/sleep",
+      "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Mood",
+      "short_name": "Mood",
+      "description": "Record your daily mood",
+      "url": "/mood",
+      "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
