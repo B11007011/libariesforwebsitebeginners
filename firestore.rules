@@ -14,11 +14,16 @@ service cloud.firestore {
 
     // User profiles
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isOwner(userId);
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
       
       // User's diary entries
       match /diary-entries/{entryId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // User's notes
+      match /notes/{noteId} {
         allow read, write: if isOwner(userId);
       }
       
@@ -30,6 +35,10 @@ service cloud.firestore {
       // User's notifications
       match /notifications/{notificationId} {
         allow read, write: if isOwner(userId);
+      }
+      
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
   }

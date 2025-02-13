@@ -20,32 +20,42 @@ import {
   DocumentData 
 } from '@firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { COLLECTIONS, addNote, getNote } from '../services/database';
 
 const CalendarPage: React.FC = () => {
   const { currentUser } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [datesWithNotes, setDatesWithNotes] = useState<Set<string>>(new Set());
+
+  const fetchNotes = async () => {
+    if (!currentUser) {
+      console.log('No user logged in');
+      return;
+    }
+    try {
+      console.log('Fetching notes for user:', currentUser.uid);
+      const notesRef = collection(db, COLLECTIONS.NOTES(currentUser.uid));
+      const notesSnap = await getDocs(notesRef);
+      const dates = new Set<string>();
+      notesSnap.forEach((doc: DocumentData) => {
+        console.log('Found note for date:', doc.id);
+        dates.add(doc.id);
+      });
+      setDatesWithNotes(dates);
+      console.log('Total notes found:', dates.size);
+    } catch (err) {
+      console.error('Error fetching notes:', err);
+      setError('Failed to fetch notes');
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
-      // Fetch all notes for the current month
-    const fetchNotes = async () => {
-        try {
-          const notesRef = collection(db, 'users', currentUser.uid, 'notes');
-          const notesSnap = await getDocs(notesRef);
-          const dates = new Set<string>();
-          notesSnap.forEach((doc: DocumentData) => {
-            dates.add(doc.id);
-          });
-          setDatesWithNotes(dates);
-      } catch (err) {
-        console.error('Error fetching notes:', err);
-      }
-    };
-    fetchNotes();
+      console.log('User authenticated, fetching notes...');
+      fetchNotes();
     }
   }, [currentUser]);
 
@@ -55,39 +65,46 @@ const CalendarPage: React.FC = () => {
 
   const handleDateChange = async (date: Date) => {
     setSelectedDate(date);
-    if (currentUser) {
-      try {
-        const noteRef = doc(db, 'users', currentUser.uid, 'notes', date.toISOString().split('T')[0]);
-        const noteDoc = await getDoc(noteRef);
-        if (noteDoc.exists()) {
-          setNote(noteDoc.data().content);
-        } else {
-          setNote('');
-        }
-      } catch (err) {
-        console.error('Error fetching note:', err);
-        setError('Failed to load note');
+    if (!currentUser) {
+      console.log('No user logged in for date change');
+      return;
+    }
+    
+    try {
+      console.log('Loading note for date:', date.toISOString().split('T')[0]);
+      const noteData = await getNote(currentUser.uid, date);
+      if (noteData) {
+        console.log('Note found:', noteData);
+        setNote(noteData.content);
+      } else {
+        console.log('No note found for date');
+        setNote('');
       }
+    } catch (err) {
+      console.error('Error fetching note:', err);
+      setError('Failed to load note');
     }
   };
 
   const handleSaveNote = async () => {
-    if (!selectedDate || !currentUser) return;
-
+    if (!currentUser || !selectedDate) {
+      console.log('Missing user or date for save');
+      return;
+    }
+    
     setSaving(true);
-    setError('');
-
+    setError(null);
+    
     try {
-      const noteRef = doc(db, 'users', currentUser.uid, 'notes', selectedDate.toISOString().split('T')[0]);
-      await setDoc(noteRef, {
-        content: note,
-        date: selectedDate,
-        updatedAt: new Date()
-      });
+      console.log('Saving note for date:', selectedDate.toISOString().split('T')[0]);
+      await addNote(currentUser.uid, selectedDate, note);
+      console.log('Note saved successfully');
+      
+      await fetchNotes(); // Refresh the calendar
+      setSaving(false);
     } catch (err) {
       console.error('Error saving note:', err);
       setError('Failed to save note');
-    } finally {
       setSaving(false);
     }
   };

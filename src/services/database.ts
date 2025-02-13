@@ -15,7 +15,7 @@ import {
 import { db } from '../firebase';
 
 // Collection paths
-const COLLECTIONS = {
+export const COLLECTIONS = {
   USERS: 'users',
   DIARY_ENTRIES: (userId: string) => `users/${userId}/diary-entries`,
   SLEEP: (userId: string) => `users/${userId}/sleep`,
@@ -108,16 +108,53 @@ export async function getUnreadNotifications(userId: string) {
 
 // Notes
 export async function addNote(userId: string, date: Date, content: string) {
-  const noteRef = doc(db, COLLECTIONS.NOTES(userId), date.toISOString().split('T')[0]);
-  await setDoc(noteRef, {
-    content,
-    date: Timestamp.fromDate(date),
-    updatedAt: Timestamp.now()
-  });
+  if (!userId) throw new Error('User ID is required');
+  if (!date) throw new Error('Date is required');
+  if (!content) throw new Error('Content is required');
+
+  const dateStr = date.toISOString().split('T')[0];
+  console.log(`Adding/updating note for user ${userId} on date ${dateStr}`);
+  console.log('Environment:', import.meta.env.MODE);
+  console.log('Using emulator:', import.meta.env.VITE_USE_FIREBASE_EMULATOR);
+  console.log('Project ID:', import.meta.env.VITE_FIREBASE_PROJECT_ID);
+  
+  try {
+    const noteRef = doc(db, COLLECTIONS.NOTES(userId), dateStr);
+    const noteData = {
+      content,
+      date: Timestamp.fromDate(date),
+      updatedAt: Timestamp.now()
+    };
+    
+    await setDoc(noteRef, noteData);
+    console.log('Note saved successfully:', { userId, dateStr, noteData });
+    return noteData;
+  } catch (error) {
+    console.error('Error saving note:', error);
+    throw error;
+  }
 }
 
 export async function getNote(userId: string, date: Date) {
-  const noteRef = doc(db, COLLECTIONS.NOTES(userId), date.toISOString().split('T')[0]);
-  const snapshot = await getDoc(noteRef);
-  return snapshot.exists() ? snapshot.data() : null;
+  if (!userId) throw new Error('User ID is required');
+  if (!date) throw new Error('Date is required');
+
+  const dateStr = date.toISOString().split('T')[0];
+  console.log(`Fetching note for user ${userId} on date ${dateStr}`);
+  
+  try {
+    const noteRef = doc(db, COLLECTIONS.NOTES(userId), dateStr);
+    const snapshot = await getDoc(noteRef);
+    
+    if (snapshot.exists()) {
+      console.log('Note found:', snapshot.data());
+      return snapshot.data();
+    } else {
+      console.log('No note found for date:', dateStr);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching note:', error);
+    throw error;
+  }
 } 
